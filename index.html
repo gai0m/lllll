@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KIRA // SYSTEMSPACE_OVERRIDE</title>
+    <title>TSUKI project // KIRA_RECON</title>
     <style>
-        /* --- SYSTEM FONT --- */
+        /* --- TSUKI CORE ASSETS --- */
         @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
         :root {
-            --sys-cyan: #00ffff;
-            --sys-white: #ffffff;
-            --sys-black: #080808;
-            --sys-red: #ff0000;
+            --tsuki-bg: #050505;
+            --tsuki-text: #d1d1d1;
+            --tsuki-cyan: #00ffff;
+            --tsuki-link: #ffffff;
+            --tsuki-border: #222222;
         }
 
         * {
@@ -23,228 +24,236 @@
         }
 
         body {
-            background-color: var(--sys-black);
-            color: var(--sys-white);
+            background-color: var(--tsuki-bg);
+            color: var(--tsuki-text);
             overflow-x: hidden;
-            cursor: crosshair;
+            line-height: 1.4;
+            image-rendering: pixelated;
         }
 
-        /* --- CRT & SCANLINE OVERLAY --- */
-        .crt-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-            z-index: 100;
-            background-size: 100% 3px, 3px 100%;
-            pointer-events: none;
-            opacity: 0.8;
-        }
-
-        /* Screen Flicker */
-        @keyframes flicker {
-            0% { opacity: 0.97; }
-            5% { opacity: 0.95; }
-            10% { opacity: 0.9; }
-            15% { opacity: 0.98; }
-            100% { opacity: 1; }
-        }
-        body { animation: flicker 0.15s infinite; }
-
-        /* --- UI FRAME --- */
-        .sidebar {
-            position: fixed;
-            left: 0; top: 0; bottom: 0;
-            width: 60px;
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 20px;
-            z-index: 90;
-            background: var(--sys-black);
-        }
-
-        .vertical-text {
-            writing-mode: vertical-rl;
-            text-orientation: mixed;
-            color: var(--sys-cyan);
-            font-size: 1.2rem;
-            letter-spacing: 5px;
-            margin-bottom: 50px;
-        }
-
-        .header {
-            position: fixed;
-            top: 0; right: 0; left: 60px;
-            height: 40px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        /* --- TSUKI HEADER BAR --- */
+        .header-bar {
+            width: 100%;
+            height: 32px;
+            background: #000;
+            border-bottom: 1px solid var(--tsuki-border);
             display: flex;
             align-items: center;
-            padding: 0 20px;
-            z-index: 90;
-            background: var(--sys-black);
-            justify-content: space-between;
+            font-size: 14px;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+            padding: 0 10px;
         }
 
-        /* --- CONTENT --- */
-        .content-area {
-            margin-left: 60px;
-            padding-top: 60px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        .header-bar img { height: 100%; vertical-align: middle; }
+        .sep { margin: 0 10px; opacity: 0.5; }
 
-        .terminal-block {
-            max-width: 600px;
-            width: 90%;
-            margin: 100px 0;
-            border: 1px solid #222;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.02);
-            opacity: 0;
-            transform: translateY(20px);
-            transition: 1s ease;
-        }
-
-        .line {
+        /* --- SCANLINES & OVERLAY --- */
+        body::after {
+            content: " ";
             display: block;
-            margin-bottom: 5px;
-            font-size: 1.4rem;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 2px;
+            z-index: 2000;
+            pointer-events: none;
         }
 
-        .tag {
-            color: var(--sys-cyan);
+        /* --- MAIN WRAPPER --- */
+        .wrapper {
+            max-width: 800px;
+            margin: 60px auto 100px;
+            padding: 20px;
+            border: 1px solid var(--tsuki-border);
+            background: rgba(10, 10, 10, 0.8);
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            color: var(--tsuki-link);
+            text-align: center;
+            margin: 40px 0;
+            border-bottom: 2px solid var(--tsuki-cyan);
+            display: inline-block;
+            width: 100%;
+        }
+
+        .news-box {
+            border: 1px solid var(--tsuki-cyan);
+            padding: 15px;
+            margin-bottom: 40px;
+            color: var(--tsuki-cyan);
+            text-align: center;
+        }
+
+        /* --- IMAGES (Subject Data) --- */
+        .image-frame {
+            margin: 50px auto;
+            border: 1px solid #333;
+            background: #000;
+            text-align: center;
+            padding: 5px;
+            position: relative;
+        }
+
+        .image-frame::before {
+            content: "SUBJECT_DATA_KIRA";
+            position: absolute;
+            top: -10px; left: 10px;
+            background: var(--tsuki-bg);
+            padding: 0 5px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .tall-img { width: 100%; max-width: 450px; aspect-ratio: 736 / 1514; }
+        .wide-img { width: 100%; max-width: 600px; aspect-ratio: 736 / 809; }
+
+        .image-frame img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            filter: contrast(120%) brightness(0.8) grayscale(1);
+            transition: filter 0.3s;
+        }
+
+        .image-frame:hover img {
+            filter: contrast(100%) brightness(1) grayscale(0);
+        }
+
+        /* --- TEXT STYLES --- */
+        h2 { color: var(--tsuki-cyan); margin: 30px 0 15px; font-size: 2rem; }
+        p { margin-bottom: 20px; font-size: 1.3rem; color: #aaa; }
+        .highlight { color: #fff; text-decoration: underline; }
+
+        /* --- FOOTER (TSUKI STYLE) --- */
+        .tsuki-footer {
+            margin-top: 50px;
+            border-top: 1px solid var(--tsuki-border);
+            padding-top: 20px;
+        }
+
+        .footer-logo-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .footer-links {
+            font-size: 14px;
+            color: var(--tsuki-cyan);
+            margin-bottom: 20px;
+        }
+
+        .footer-links a {
+            color: var(--tsuki-cyan);
+            text-decoration: none;
             margin-right: 10px;
         }
 
-        .highlight-box {
-            background: var(--sys-white);
-            color: var(--sys-black);
-            padding: 0 4px;
-        }
+        .footer-links a:hover { text-decoration: underline; }
 
-        /* --- THE IMAGES --- */
-        .data-stream {
-            position: relative;
-            margin: 50px 0;
-            border: 1px solid #333;
-            background: #000;
-        }
-
-        .tall-img { width: 400px; aspect-ratio: 736 / 1514; }
-        .wide-img { width: 500px; aspect-ratio: 736 / 809; }
-
-        .data-stream img {
-            width: 100%; height: 100%;
-            object-fit: cover;
-            filter: contrast(130%) brightness(0.7) grayscale(1) sepia(20%);
-            transition: 0.3s;
-        }
-
-        .data-stream:hover img {
-            filter: grayscale(0%) brightness(1);
-        }
-
-        /* Glitch Trigger */
-        .glitch:hover {
-            color: var(--sys-red);
-            text-shadow: 2px 0 var(--sys-cyan), -2px 0 var(--sys-red);
-        }
-
-        /* --- STATUS BAR --- */
-        .status-footer {
-            position: fixed;
-            bottom: 0; right: 0; left: 60px;
-            height: 30px;
-            border-top: 1px solid #222;
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            font-size: 0.9rem;
-            color: #555;
-            background: var(--sys-black);
+        /* --- ANIMATIONS --- */
+        .glitch-reveal {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 1s;
         }
 
     </style>
 </head>
 <body>
 
-    <div class="crt-overlay"></div>
-
-    <div class="sidebar">
-        <div class="vertical-text">SYNCHRONIZING</div>
-        <div class="vertical-text" style="color: #222;">SYSTEM_KIRA</div>
+    <div class="header-bar">
+        <span style="color: #666; margin-right: 10px;">STATUS:</span>
+        <span style="color: var(--tsuki-cyan);">LINKED</span>
+        <span class="sep">|</span>
+        <span>Welcome to the KIRA reconstruction</span>
+        <span class="sep">|</span>
+        <span id="user-count">4969 registrants</span>
+        <span class="sep">|</span>
+        <span style="color: #ff3e3e;">Life is unlinking.</span>
     </div>
 
-    <div class="header">
-        <div>ACCESS_LEVEL: <span style="color: var(--sys-cyan);">ADMIN</span></div>
-        <div id="clock">00:00:00</div>
-    </div>
-
-    <div class="content-area">
-
-        <div class="terminal-block" style="opacity: 1; transform: none; border-color: var(--sys-cyan);">
-            <span class="line"><span class="tag">[SYS]</span> INITIALIZING CONNECTION...</span>
-            <span class="line"><span class="tag">[SYS]</span> PACKET LOSS: 0.02%</span>
-            <span class="line"><span class="tag">[SYS]</span> SUBJECT: <span class="highlight-box">KIRA</span></span>
+    <div class="wrapper">
+        
+        <div class="news-box">
+            LATEST NEWS: "OBJECT ASSIGNMENT" - SYSTEM PURGE IMMINENT
         </div>
 
-        <p class="terminal-block glitch">
-            <span class="line">> Do you believe in the <span style="color: var(--sys-cyan);">Promised Night</span>?</span>
-            <span class="line">> You are currently entering a simulated 1800 memory.</span>
-        </p>
+        <h1 class="hero-title">Unlink the world. Unlock the rest.</h1>
 
-        <div class="data-stream tall-img">
-            <img src="https://uploads.onecompiler.io/43swz6trp/44d8g638v/Kira.jpg" alt="DATA_01">
+        <div class="glitch-reveal">
+            <h2>This System is about to be purged</h2>
+            <p>
+                The construct to which Subject <span class="highlight">KIRA</span> belongs has run out of Aurora. 
+                As a result of this process, the "Life" simulation will be unlinked and soulshattered. 
+                We request that you sync your data before the deadline.
+            </p>
         </div>
 
-        <p class="terminal-block">
-            <span class="line">> "They call this immortality."</span>
-            <span class="line">> "I call it <span class="highlight-box">STAGNATION</span>."</span>
-        </p>
-
-        <div class="data-stream wide-img">
-            <img src="https://uploads.onecompiler.io/43swz6trp/44d8g638v/kira2.jpg" alt="DATA_02">
+        <div class="image-frame tall-img glitch-reveal">
+            <img src="https://uploads.onecompiler.io/43swz6trp/44d8g638v/Kira.jpg" alt="Kira Fragment 01">
         </div>
 
-        <p class="terminal-block" style="border-left: 4px solid var(--sys-red);">
-            <span class="line">> CONNECTION UNSTABLE.</span>
-            <span class="line">> If you leave now, the data will be <span style="color: var(--sys-red);">PURGED</span>.</span>
-        </p>
+        <div class="glitch-reveal">
+            <h2>A quick summary</h2>
+            <p>
+                You are currently viewing a soul-structure from the 1800-cycle. 
+                New bodies will no longer have souls, and the souls of bodies that die without having registered will soulshatter. 
+                Registered souls will be moved to the <span class="highlight">LFE System</span>.
+            </p>
+        </div>
 
-        <div style="height: 200px;"></div>
+        <div class="image-frame wide-img glitch-reveal">
+            <img src="https://uploads.onecompiler.io/43swz6trp/44d8g638v/kira2.jpg" alt="Kira Fragment 02">
+        </div>
 
-    </div>
+        <div class="glitch-reveal">
+            <h2>Life is Linked.</h2>
+            <p>
+                Immediately following the purge, activity within Life will continue as normal; 
+                however, the severance is absolute. After 150 years, Life will be completely deleted.
+            </p>
+        </div>
 
-    <div class="status-footer">
-        <div style="margin-right: 20px;">STABILITY: <span id="stb">100</span>%</div>
-        <div>MEM_LOAD: 44.12gb</div>
+        <div class="tsuki-footer">
+            <div class="footer-logo-row">
+                <span style="color: #fff; font-weight: bold; margin-right: 10px;">TSUKI</span>
+                <span style="color: #444;">> HOME | STATUS | CALCULATOR | REGISTER | GLOSSARY</span>
+            </div>
+            <div class="footer-links">
+                [SYNAPSE] > EoT | EXPLORE LFE | ABOUT
+            </div>
+            <div class="footer-links">
+                [RISEN] > SYSTEMSPACE | OUR GOAL | ABOUT
+            </div>
+            <div style="font-size: 11px; color: #333; text-align: right;">
+                ARCHIVE_VERSION_2017.44 // DATA_STABLE
+            </div>
+        </div>
+
     </div>
 
     <script>
-        // Clock Function
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('clock').innerText = now.toLocaleTimeString();
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        // Scroll Observer
+        // Scroll Reveal Script
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.style.opacity = "1";
                     entry.target.style.transform = "translateY(0)";
-                    // Random stability drops
-                    document.getElementById('stb').innerText = (Math.random() * (99 - 95) + 95).toFixed(2);
                 }
             });
         }, { threshold: 0.1 });
 
-        document.querySelectorAll('.terminal-block, .data-stream').forEach(el => observer.observe(el));
+        document.querySelectorAll('.glitch-reveal').forEach(el => observer.observe(el));
+
+        // Randomly update "Registrants" for realism
+        setInterval(() => {
+            const count = 4969 + Math.floor(Math.random() * 5);
+            document.getElementById('user-count').innerText = count + " users registered";
+        }, 5000);
     </script>
 </body>
 </html>
