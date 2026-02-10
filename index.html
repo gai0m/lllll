@@ -3,214 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KIRA // SYSTEMSPACE_L-SYSTEM</title>
+    <title>KIRA // SYSTEMSPACE_OVERRIDE</title>
     <style>
-        /* --- CORE SYSTEM ASSETS --- */
-        /* Importing the 04b03 pixel font (approximated via Google or local) */
+        /* --- SYSTEM FONT --- */
         @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
         :root {
             --sys-cyan: #00ffff;
             --sys-white: #ffffff;
-            --sys-black: #000000;
-            --sys-gray: #1a1a1a;
+            --sys-black: #080808;
+            --sys-red: #ff0000;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            /* Using VT323 for that terminal/pixel feel */
-            font-family: 'VT323', monospace; 
+            font-family: 'VT323', monospace;
         }
 
         body {
             background-color: var(--sys-black);
             color: var(--sys-white);
             overflow-x: hidden;
-            line-height: 1.2;
+            cursor: crosshair;
         }
 
-        /* --- THE SCANLINE OVERLAY (Systemspace Signature) --- */
-        body::before {
-            content: " ";
-            display: block;
+        /* --- CRT & SCANLINE OVERLAY --- */
+        .crt-overlay {
             position: fixed;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
             z-index: 100;
-            background-size: 100% 2px, 3px 100%;
+            background-size: 100% 3px, 3px 100%;
             pointer-events: none;
+            opacity: 0.8;
         }
 
-        /* --- THE INTERFACE FRAME --- */
-        .system-border {
+        /* Screen Flicker */
+        @keyframes flicker {
+            0% { opacity: 0.97; }
+            5% { opacity: 0.95; }
+            10% { opacity: 0.9; }
+            15% { opacity: 0.98; }
+            100% { opacity: 1; }
+        }
+        body { animation: flicker 0.15s infinite; }
+
+        /* --- UI FRAME --- */
+        .sidebar {
             position: fixed;
-            top: 10px; left: 10px; right: 10px; bottom: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            pointer-events: none;
+            left: 0; top: 0; bottom: 0;
+            width: 60px;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
             z-index: 90;
+            background: var(--sys-black);
         }
 
-        .header-readout {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            font-size: 0.8rem;
+        .vertical-text {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
             color: var(--sys-cyan);
-            letter-spacing: 2px;
-            z-index: 95;
-            text-transform: uppercase;
+            font-size: 1.2rem;
+            letter-spacing: 5px;
+            margin-bottom: 50px;
+        }
+
+        .header {
+            position: fixed;
+            top: 0; right: 0; left: 60px;
+            height: 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 90;
+            background: var(--sys-black);
+            justify-content: space-between;
         }
 
         /* --- CONTENT --- */
-        .container {
-            max-width: 700px;
-            margin: 0 auto;
-            padding: 150px 20px;
-            position: relative;
+        .content-area {
+            margin-left: 60px;
+            padding-top: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        .monologue-block {
+        .terminal-block {
+            max-width: 600px;
+            width: 90%;
             margin: 100px 0;
+            border: 1px solid #222;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.02);
             opacity: 0;
-            transform: translateX(-10px);
-            transition: all 1s ease-out;
-            border-left: 2px solid var(--sys-cyan);
-            padding-left: 20px;
+            transform: translateY(20px);
+            transition: 1s ease;
         }
 
-        .text-line {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
+        .line {
             display: block;
+            margin-bottom: 5px;
+            font-size: 1.4rem;
         }
 
-        .highlight {
+        .tag {
+            color: var(--sys-cyan);
+            margin-right: 10px;
+        }
+
+        .highlight-box {
             background: var(--sys-white);
             color: var(--sys-black);
-            padding: 0 5px;
+            padding: 0 4px;
         }
 
-        /* --- THE IMAGES (DATA FRAGMENTS) --- */
-        .data-fragment {
+        /* --- THE IMAGES --- */
+        .data-stream {
             position: relative;
-            margin: 80px 0;
+            margin: 50px 0;
             border: 1px solid #333;
-            background: #050505;
-            overflow: hidden;
+            background: #000;
         }
 
-        /* Aspect Ratios from your files */
-        .fragment-tall { width: 100%; max-width: 500px; aspect-ratio: 736 / 1514; }
-        .fragment-wide { width: 100%; max-width: 600px; aspect-ratio: 736 / 809; }
+        .tall-img { width: 400px; aspect-ratio: 736 / 1514; }
+        .wide-img { width: 500px; aspect-ratio: 736 / 809; }
 
-        .data-fragment img {
+        .data-stream img {
             width: 100%; height: 100%;
             object-fit: cover;
-            filter: contrast(150%) brightness(0.8) grayscale(1);
-            mix-blend-mode: lighten; /* Makes the image feel like a projection */
-            transition: 0.5s;
+            filter: contrast(130%) brightness(0.7) grayscale(1) sepia(20%);
+            transition: 0.3s;
         }
 
-        .data-fragment:hover img {
-            filter: contrast(110%) brightness(1) grayscale(0);
+        .data-stream:hover img {
+            filter: grayscale(0%) brightness(1);
         }
 
-        /* Glitch Animation */
-        .glitch {
-            position: relative;
-            animation: glitch-anim 4s infinite linear alternate-reverse;
+        /* Glitch Trigger */
+        .glitch:hover {
+            color: var(--sys-red);
+            text-shadow: 2px 0 var(--sys-cyan), -2px 0 var(--sys-red);
         }
 
-        @keyframes glitch-anim {
-            0% { transform: skew(0deg); }
-            2% { transform: skew(10deg); }
-            4% { transform: skew(-5deg); }
-            5% { transform: skew(0deg); }
-            100% { transform: skew(0deg); }
-        }
-
-        /* Progress readout at bottom */
-        .system-status {
+        /* --- STATUS BAR --- */
+        .status-footer {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            font-size: 0.8rem;
-            color: #444;
-            z-index: 95;
+            bottom: 0; right: 0; left: 60px;
+            height: 30px;
+            border-top: 1px solid #222;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 0.9rem;
+            color: #555;
+            background: var(--sys-black);
         }
 
     </style>
 </head>
 <body>
 
-    <div class="system-border"></div>
-    <div class="header-readout" id="clock">SYSTEM_ID: KIRA // DATA_STREAM: ACTIVE</div>
-    <div class="system-status" id="scrollPerc">STABILITY: 100.00%</div>
+    <div class="crt-overlay"></div>
 
-    <div class="container">
-        
-        <div class="monologue-block" style="opacity:1; transform:none;">
-            <span class="text-line">INITIALIZING...</span>
-            <span class="text-line">Subject <span class="highlight">KIRA</span> detected.</span>
-            <span class="text-line">Are you ready to synchronize?</span>
+    <div class="sidebar">
+        <div class="vertical-text">SYNCHRONIZING</div>
+        <div class="vertical-text" style="color: #222;">SYSTEM_KIRA</div>
+    </div>
+
+    <div class="header">
+        <div>ACCESS_LEVEL: <span style="color: var(--sys-cyan);">ADMIN</span></div>
+        <div id="clock">00:00:00</div>
+    </div>
+
+    <div class="content-area">
+
+        <div class="terminal-block" style="opacity: 1; transform: none; border-color: var(--sys-cyan);">
+            <span class="line"><span class="tag">[SYS]</span> INITIALIZING CONNECTION...</span>
+            <span class="line"><span class="tag">[SYS]</span> PACKET LOSS: 0.02%</span>
+            <span class="line"><span class="tag">[SYS]</span> SUBJECT: <span class="highlight-box">KIRA</span></span>
         </div>
 
-        <div class="data-fragment fragment-tall glitch">
-            <img src="https://uploads.onecompiler.io/43swz6trp/44d8g638v/Kira.jpg" alt="Subject_01">
+        <p class="terminal-block glitch">
+            <span class="line">> Do you believe in the <span style="color: var(--sys-cyan);">Promised Night</span>?</span>
+            <span class="line">> You are currently entering a simulated 1800 memory.</span>
+        </p>
+
+        <div class="data-stream tall-img">
+            <img src="https://uploads.onecompiler.io/43swz6trp/44d8g638v/Kira.jpg" alt="DATA_01">
         </div>
 
-        <div class="monologue-block">
-            <span class="text-line">> Why do you seek the Life System?</span>
-            <span class="text-line">> This world is merely <span class="highlight">rendered data.</span></span>
-            <span class="text-line">> Your memories are cache files waiting to be cleared.</span>
+        <p class="terminal-block">
+            <span class="line">> "They call this immortality."</span>
+            <span class="line">> "I call it <span class="highlight-box">STAGNATION</span>."</span>
+        </p>
+
+        <div class="data-stream wide-img">
+            <img src="https://uploads.onecompiler.io/43swz6trp/44d8g638v/kira2.jpg" alt="DATA_02">
         </div>
 
-        <div class="data-fragment fragment-wide">
-            <img src="https://uploads.onecompiler.io/43swz6trp/44d8g638v/kira2.jpg" alt="Subject_02">
-        </div>
+        <p class="terminal-block" style="border-left: 4px solid var(--sys-red);">
+            <span class="line">> CONNECTION UNSTABLE.</span>
+            <span class="line">> If you leave now, the data will be <span style="color: var(--sys-red);">PURGED</span>.</span>
+        </p>
 
-        <div class="monologue-block">
-            <span class="text-line">> Connection established.</span>
-            <span class="text-line">> Do not look away while the system is <span class="highlight">DELETING...</span></span>
-        </div>
-
-        <div style="height: 300px;"></div>
+        <div style="height: 200px;"></div>
 
     </div>
 
+    <div class="status-footer">
+        <div style="margin-right: 20px;">STABILITY: <span id="stb">100</span>%</div>
+        <div>MEM_LOAD: 44.12gb</div>
+    </div>
+
     <script>
-        // 1. Live Clock/Status Readout
-        function updateStatus() {
+        // Clock Function
+        function updateClock() {
             const now = new Date();
-            const timeStr = now.getHours().toString().padStart(2, '0') + ":" + 
-                            now.getMinutes().toString().padStart(2, '0') + ":" + 
-                            now.getSeconds().toString().padStart(2, '0');
-            document.getElementById('clock').innerText = `SYSTEM_ID: KIRA // TIME: ${timeStr} // DATA: OK`;
+            document.getElementById('clock').innerText = now.toLocaleTimeString();
         }
-        setInterval(updateStatus, 1000);
+        setInterval(updateClock, 1000);
+        updateClock();
 
-        // 2. Stability Readout (Scroll based)
-        window.addEventListener('scroll', () => {
-            const scroll = window.scrollY;
-            const height = document.documentElement.scrollHeight - window.innerHeight;
-            const stability = (100 - (scroll / height * 10)).toFixed(2);
-            document.getElementById('scrollPerc').innerText = `STABILITY: ${stability}%`;
-        });
-
-        // 3. Scroll Reveal (Step-by-step like a data stream)
+        // Scroll Observer
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.style.opacity = "1";
-                    entry.target.style.transform = "translateX(0)";
+                    entry.target.style.transform = "translateY(0)";
+                    // Random stability drops
+                    document.getElementById('stb').innerText = (Math.random() * (99 - 95) + 95).toFixed(2);
                 }
             });
         }, { threshold: 0.1 });
 
-        document.querySelectorAll('.monologue-block, .data-fragment').forEach(el => observer.observe(el));
+        document.querySelectorAll('.terminal-block, .data-stream').forEach(el => observer.observe(el));
     </script>
 </body>
 </html>
