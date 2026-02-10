@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kira: The Eternal Monologue</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Pinyon+Script&display=swap');
+
+        :root {
+            --blood-red: #4a0a0a;
+            --moon-glow: #a8a8a8;
+            --void-black: #050505;
+            --parchment: #e0e0e0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--void-black);
+            color: var(--parchment);
+            font-family: 'Cinzel', serif;
+            overflow-x: hidden;
+            cursor: crosshair;
+        }
+
+        .fog {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.2), rgba(0, 0, 0, 0.95));
+            pointer-events: none; z-index: 10;
+        }
+
+        .container {
+            max-width: 900px; margin: 0 auto; padding: 50px 20px;
+            position: relative; z-index: 5;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        .monologue {
+            font-size: 1.4rem; line-height: 2; letter-spacing: 2px;
+            margin: 60px 0; text-align: center;
+            opacity: 0; transform: translateY(30px);
+            transition: opacity 2.5s ease, transform 2.5s ease;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+
+        .highlight {
+            color: #8a1c1c; font-family: 'Pinyon Script', cursive;
+            font-size: 2.2rem; display: block; margin-top: 10px;
+        }
+
+        .image-frame {
+            position: relative; margin: 80px 0; overflow: hidden;
+            border: 1px solid rgba(138, 28, 28, 0.2);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 1);
+            background-color: #0a0a0a;
+        }
+
+        .portrait-tall { width: 100%; max-width: 736px; aspect-ratio: 736 / 1514; }
+        .portrait-wide { width: 100%; max-width: 736px; aspect-ratio: 736 / 809; }
+
+        .image-frame img {
+            width: 100%; height: 100%; object-fit: cover;
+            filter: grayscale(100%) contrast(110%) brightness(0.7);
+            transition: filter 2s ease, transform 10s linear;
+        }
+
+        .image-frame:hover img {
+            filter: grayscale(20%) contrast(100%) brightness(0.9);
+            transform: scale(1.05);
+        }
+
+        .life-line {
+            position: fixed; top: 0; left: 0; height: 3px;
+            background: linear-gradient(to right, #4a0a0a, #8a1c1c);
+            width: 0%; z-index: 100; box-shadow: 0 0 10px #8a1c1c;
+        }
+
+        .spacer { height: 30vh; }
+        h1 {
+            font-size: 5rem; text-transform: uppercase; letter-spacing: 20px;
+            color: #1a1a1a; text-shadow: 0 0 20px rgba(138, 28, 28, 0.3);
+            animation: pulse 6s infinite; margin-bottom: 20px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="life-line" id="lifeLine"></div>
+    <div class="fog"></div>
+
+    <div class="container">
+        <div class="spacer"></div>
+        <h1>KIRA</h1>
+        <p style="font-family: 'Pinyon Script'; font-size: 1.5rem; color: #444;">1800-???</p>
+
+        <p class="monologue">
+            Welcome to my silence. You have walked through the digital veil... 
+            <span class="highlight">into my world.</span>
+        </p>
+
+        <div class="image-frame portrait-tall">
+            <img src="kira.jpg" alt="The Tall Shadow">
+        </div>
+
+        <p class="monologue">
+            Can you feel the weight of centuries? 
+            The moon is the only witness that never lies.
+        </p>
+
+        <div class="image-frame portrait-wide">
+            <img src="kira2.jpg" alt="The Piercing Gaze">
+        </div>
+
+        <p class="monologue">
+            Don't look away. <br>
+            The moment you blink... <br>
+            <span class="highlight">I disappear.</span>
+        </p>
+
+        <div class="spacer"></div>
+        <p style="text-align: center; color: #222; letter-spacing: 5px;">— RYE —</p>
+        <div class="spacer"></div>
+    </div>
+
+    <script>
+        window.addEventListener('scroll', () => {
+            const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (scrollTop / scrollHeight) * 100;
+            document.getElementById('lifeLine').style.width = scrolled + "%";
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = 1;
+                    entry.target.style.transform = "translateY(0)";
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.monologue, .image-frame').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
