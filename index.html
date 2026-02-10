@@ -3,150 +3,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kira: The Eternal Monologue</title>
+    <title>KIRA // SYSTEMSPACE_L-SYSTEM</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Pinyon+Script&display=swap');
+        /* --- CORE SYSTEM ASSETS --- */
+        /* Importing the 04b03 pixel font (approximated via Google or local) */
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
         :root {
-            --blood-red: #4a0a0a;
-            --moon-glow: #a8a8a8;
-            --void-black: #050505;
-            --parchment: #e0e0e0;
+            --sys-cyan: #00ffff;
+            --sys-white: #ffffff;
+            --sys-black: #000000;
+            --sys-gray: #1a1a1a;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            /* Using VT323 for that terminal/pixel feel */
+            font-family: 'VT323', monospace; 
+        }
 
         body {
-            background-color: var(--void-black);
-            color: var(--parchment);
-            font-family: 'Cinzel', serif;
+            background-color: var(--sys-black);
+            color: var(--sys-white);
             overflow-x: hidden;
-            cursor: crosshair;
+            line-height: 1.2;
         }
 
-        .fog {
+        /* --- THE SCANLINE OVERLAY (Systemspace Signature) --- */
+        body::before {
+            content: " ";
+            display: block;
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.2), rgba(0, 0, 0, 0.95));
-            pointer-events: none; z-index: 10;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 100;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
         }
 
+        /* --- THE INTERFACE FRAME --- */
+        .system-border {
+            position: fixed;
+            top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+            z-index: 90;
+        }
+
+        .header-readout {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 0.8rem;
+            color: var(--sys-cyan);
+            letter-spacing: 2px;
+            z-index: 95;
+            text-transform: uppercase;
+        }
+
+        /* --- CONTENT --- */
         .container {
-            max-width: 900px; margin: 0 auto; padding: 50px 20px;
-            position: relative; z-index: 5;
-            display: flex; flex-direction: column; align-items: center;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 150px 20px;
+            position: relative;
         }
 
-        .monologue {
-            font-size: 1.4rem; line-height: 2; letter-spacing: 2px;
-            margin: 60px 0; text-align: center;
-            opacity: 0; transform: translateY(30px);
-            transition: opacity 2.5s ease, transform 2.5s ease;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        .monologue-block {
+            margin: 100px 0;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 1s ease-out;
+            border-left: 2px solid var(--sys-cyan);
+            padding-left: 20px;
+        }
+
+        .text-line {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            display: block;
         }
 
         .highlight {
-            color: #8a1c1c; font-family: 'Pinyon Script', cursive;
-            font-size: 2.2rem; display: block; margin-top: 10px;
+            background: var(--sys-white);
+            color: var(--sys-black);
+            padding: 0 5px;
         }
 
-        .image-frame {
-            position: relative; margin: 80px 0; overflow: hidden;
-            border: 1px solid rgba(138, 28, 28, 0.2);
-            box-shadow: 0 0 50px rgba(0, 0, 0, 1);
-            background-color: #0a0a0a;
+        /* --- THE IMAGES (DATA FRAGMENTS) --- */
+        .data-fragment {
+            position: relative;
+            margin: 80px 0;
+            border: 1px solid #333;
+            background: #050505;
+            overflow: hidden;
         }
 
-        .portrait-tall { width: 100%; max-width: 736px; aspect-ratio: 736 / 1514; }
-        .portrait-wide { width: 100%; max-width: 736px; aspect-ratio: 736 / 809; }
+        /* Aspect Ratios from your files */
+        .fragment-tall { width: 100%; max-width: 500px; aspect-ratio: 736 / 1514; }
+        .fragment-wide { width: 100%; max-width: 600px; aspect-ratio: 736 / 809; }
 
-        .image-frame img {
-            width: 100%; height: 100%; object-fit: cover;
-            filter: grayscale(100%) contrast(110%) brightness(0.7);
-            transition: filter 2s ease, transform 10s linear;
+        .data-fragment img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            filter: contrast(150%) brightness(0.8) grayscale(1);
+            mix-blend-mode: lighten; /* Makes the image feel like a projection */
+            transition: 0.5s;
         }
 
-        .image-frame:hover img {
-            filter: grayscale(20%) contrast(100%) brightness(0.9);
-            transform: scale(1.05);
+        .data-fragment:hover img {
+            filter: contrast(110%) brightness(1) grayscale(0);
         }
 
-        .life-line {
-            position: fixed; top: 0; left: 0; height: 3px;
-            background: linear-gradient(to right, #4a0a0a, #8a1c1c);
-            width: 0%; z-index: 100; box-shadow: 0 0 10px #8a1c1c;
+        /* Glitch Animation */
+        .glitch {
+            position: relative;
+            animation: glitch-anim 4s infinite linear alternate-reverse;
         }
 
-        .spacer { height: 30vh; }
-        h1 {
-            font-size: 5rem; text-transform: uppercase; letter-spacing: 20px;
-            color: #1a1a1a; text-shadow: 0 0 20px rgba(138, 28, 28, 0.3);
-            animation: pulse 6s infinite; margin-bottom: 20px;
+        @keyframes glitch-anim {
+            0% { transform: skew(0deg); }
+            2% { transform: skew(10deg); }
+            4% { transform: skew(-5deg); }
+            5% { transform: skew(0deg); }
+            100% { transform: skew(0deg); }
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 0.8; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.05); }
+        /* Progress readout at bottom */
+        .system-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 0.8rem;
+            color: #444;
+            z-index: 95;
         }
+
     </style>
 </head>
 <body>
 
-    <div class="life-line" id="lifeLine"></div>
-    <div class="fog"></div>
+    <div class="system-border"></div>
+    <div class="header-readout" id="clock">SYSTEM_ID: KIRA // DATA_STREAM: ACTIVE</div>
+    <div class="system-status" id="scrollPerc">STABILITY: 100.00%</div>
 
     <div class="container">
-        <div class="spacer"></div>
-        <h1>KIRA</h1>
-        <p style="font-family: 'Pinyon Script'; font-size: 1.5rem; color: #444;">1800-???</p>
-
-        <p class="monologue">
-            Welcome to my silence. You have walked through the digital veil... 
-            <span class="highlight">into my world.</span>
-        </p>
-
-        <div class="image-frame portrait-tall">
-            <img src="kira.jpg" alt="The Tall Shadow">
+        
+        <div class="monologue-block" style="opacity:1; transform:none;">
+            <span class="text-line">INITIALIZING...</span>
+            <span class="text-line">Subject <span class="highlight">KIRA</span> detected.</span>
+            <span class="text-line">Are you ready to synchronize?</span>
         </div>
 
-        <p class="monologue">
-            Can you feel the weight of centuries? 
-            The moon is the only witness that never lies.
-        </p>
-
-        <div class="image-frame portrait-wide">
-            <img src="kira2.jpg" alt="The Piercing Gaze">
+        <div class="data-fragment fragment-tall glitch">
+            <img src="https://uploads.onecompiler.io/43swz6trp/44d8g638v/Kira.jpg" alt="Subject_01">
         </div>
 
-        <p class="monologue">
-            Don't look away. <br>
-            The moment you blink... <br>
-            <span class="highlight">I disappear.</span>
-        </p>
+        <div class="monologue-block">
+            <span class="text-line">> Why do you seek the Life System?</span>
+            <span class="text-line">> This world is merely <span class="highlight">rendered data.</span></span>
+            <span class="text-line">> Your memories are cache files waiting to be cleared.</span>
+        </div>
 
-        <div class="spacer"></div>
-        <p style="text-align: center; color: #222; letter-spacing: 5px;">— RYE —</p>
-        <div class="spacer"></div>
+        <div class="data-fragment fragment-wide">
+            <img src="https://uploads.onecompiler.io/43swz6trp/44d8g638v/kira2.jpg" alt="Subject_02">
+        </div>
+
+        <div class="monologue-block">
+            <span class="text-line">> Connection established.</span>
+            <span class="text-line">> Do not look away while the system is <span class="highlight">DELETING...</span></span>
+        </div>
+
+        <div style="height: 300px;"></div>
+
     </div>
 
     <script>
+        // 1. Live Clock/Status Readout
+        function updateStatus() {
+            const now = new Date();
+            const timeStr = now.getHours().toString().padStart(2, '0') + ":" + 
+                            now.getMinutes().toString().padStart(2, '0') + ":" + 
+                            now.getSeconds().toString().padStart(2, '0');
+            document.getElementById('clock').innerText = `SYSTEM_ID: KIRA // TIME: ${timeStr} // DATA: OK`;
+        }
+        setInterval(updateStatus, 1000);
+
+        // 2. Stability Readout (Scroll based)
         window.addEventListener('scroll', () => {
-            const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            const scrolled = (scrollTop / scrollHeight) * 100;
-            document.getElementById('lifeLine').style.width = scrolled + "%";
+            const scroll = window.scrollY;
+            const height = document.documentElement.scrollHeight - window.innerHeight;
+            const stability = (100 - (scroll / height * 10)).toFixed(2);
+            document.getElementById('scrollPerc').innerText = `STABILITY: ${stability}%`;
         });
 
+        // 3. Scroll Reveal (Step-by-step like a data stream)
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.style.opacity = 1;
-                    entry.target.style.transform = "translateY(0)";
+                    entry.target.style.opacity = "1";
+                    entry.target.style.transform = "translateX(0)";
                 }
             });
         }, { threshold: 0.1 });
 
-        document.querySelectorAll('.monologue, .image-frame').forEach(el => observer.observe(el));
+        document.querySelectorAll('.monologue-block, .data-fragment').forEach(el => observer.observe(el));
     </script>
 </body>
 </html>
